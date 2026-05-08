@@ -6,6 +6,9 @@ import com.anil.placementprep.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.anil.placementprep.dto.LoginRequest;
+import com.anil.placementprep.security.JwtService;
+
 
 @Service
 @RequiredArgsConstructor
@@ -15,6 +18,8 @@ public class AuthService {
     private final UserRepository userRepository;
 
     private final BCryptPasswordEncoder passwordEncoder;
+
+    private final JwtService jwtService;
 
     public String register(RegisterRequest request) {
 
@@ -33,4 +38,15 @@ public class AuthService {
 
         return "User registered successfully";
     }
+    public String login(LoginRequest request) {
+
+    User user = userRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
+    if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        throw new RuntimeException("Invalid password");
+    }
+
+    return jwtService.generateToken(user.getEmail());
+}
 }

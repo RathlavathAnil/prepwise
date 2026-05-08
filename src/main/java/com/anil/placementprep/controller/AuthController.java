@@ -4,6 +4,7 @@ import com.anil.placementprep.dto.RegisterRequest;
 import com.anil.placementprep.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import com.anil.placementprep.dto.LoginRequest;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -17,5 +18,9 @@ public class AuthController {
 
     public String register(@RequestBody RegisterRequest request) {
         return authService.register(request);
+    }
+    @PostMapping("/login")
+    public String login(@RequestBody LoginRequest request) {
+        return authService.login(request);
     }
 }
