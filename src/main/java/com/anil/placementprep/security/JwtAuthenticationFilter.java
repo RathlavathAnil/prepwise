@@ -13,16 +13,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.anil.placementprep.entity.User;
+import com.anil.placementprep.repository.UserRepository;
+
 @Component
 @RequiredArgsConstructor
+
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+    private final UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(
@@ -35,24 +41,31 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String jwt;
         final String userEmail;
 
+        // Check Authorization Header
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
+        // Extract JWT token
         jwt = authHeader.substring(7);
 
+        // Extract Email from JWT
         userEmail = jwtService.extractUsername(jwt);
 
-        if (userEmail != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
+        // Authenticate user
+        if (userEmail != null
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
+
+            User user = userRepository.findByEmail(userEmail)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
             UsernamePasswordAuthenticationToken authToken =
                     new UsernamePasswordAuthenticationToken(
                             userEmail,
                             null,
                             List.of(
-                                    new SimpleGrantedAuthority("USER")
+                                    new SimpleGrantedAuthority(user.getRole())
                             )
                     );
 
