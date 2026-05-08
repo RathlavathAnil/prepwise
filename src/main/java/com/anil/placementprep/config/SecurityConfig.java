@@ -30,8 +30,14 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**"
                         ).permitAll()
-                        .anyRequest().authenticated()
+                        .requestMatchers("/api/admin/**")
+                        .hasAuthority("ADMIN")
+                        .requestMatchers("/api/user/**")
+                        .hasAnyAuthority("USER", "ADMIN")
+                        .anyRequest()
+                        .authenticated()
                 )
+                
 
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
