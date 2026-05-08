@@ -5,6 +5,7 @@ import com.anil.placementprep.repository.ProgressRepository;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -17,11 +18,25 @@ public class ProgressService {
     private final ProgressRepository progressRepository;
 
     public Progress saveProgress(Progress progress) {
+
+        String userEmail = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        progress.setUserEmail(userEmail);
+
         return progressRepository.save(progress);
     }
 
-    public List<Progress> getUserProgress(Long userId) {
-        return progressRepository.findByUserId(userId);
+    public List<Progress> getUserProgress() {
+
+        String userEmail = SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName();
+
+        return progressRepository.findByUserEmail(userEmail);
     }
 
     public Progress updateProgress(Long id, Progress updatedProgress) {

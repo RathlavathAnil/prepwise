@@ -22,10 +22,10 @@ public class ProgressController {
         return progressService.saveProgress(progress);
     }
 
-    @GetMapping("/user/{userId}")
-    public List<Progress> getUserProgress(@PathVariable Long userId) {
-        return progressService.getUserProgress(userId);
-    }
+    @GetMapping("/my-progress")
+public List<Progress> getUserProgress() {
+    return progressService.getUserProgress();
+}
 
     @PutMapping("/update/{id}")
     public Progress updateProgress(

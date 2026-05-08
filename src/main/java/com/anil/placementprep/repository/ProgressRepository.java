@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface ProgressRepository extends JpaRepository<Progress, Long> {
 
-    List<Progress> findByUserId(Long userId);
+    List<Progress> findByUserEmail(String userEmail);
 
     long countByStatus(String status);
 }

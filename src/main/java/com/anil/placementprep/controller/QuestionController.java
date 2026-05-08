@@ -29,6 +29,26 @@ public class QuestionController {
     public Question getQuestionById(@PathVariable Long id) {
         return questionService.getQuestionById(id);
     }
+    @GetMapping("/company/{company}")
+public List<Question> getQuestionsByCompany(
+        @PathVariable String company
+) {
+    return questionService.getQuestionsByCompany(company);
+}
+
+@GetMapping("/difficulty/{difficulty}")
+public List<Question> getQuestionsByDifficulty(
+        @PathVariable String difficulty
+) {
+    return questionService.getQuestionsByDifficulty(difficulty);
+}
+
+@GetMapping("/topic/{topic}")
+public List<Question> getQuestionsByTopic(
+        @PathVariable String topic
+) {
+    return questionService.getQuestionsByTopic(topic);
+}
 
     @DeleteMapping("/delete/{id}")
     public String deleteQuestion(@PathVariable Long id) {

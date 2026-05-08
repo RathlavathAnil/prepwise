@@ -31,4 +31,15 @@ public class QuestionService {
         questionRepository.deleteById(id);
         return "Question deleted successfully";
     }
+    public List<Question> getQuestionsByCompany(String company) {
+    return questionRepository.findByCompany(company);
+}
+
+public List<Question> getQuestionsByDifficulty(String difficulty) {
+    return questionRepository.findByDifficulty(difficulty);
+}
+
+public List<Question> getQuestionsByTopic(String topic) {
+    return questionRepository.findByTopic(topic);
+}
 }

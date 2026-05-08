@@ -18,7 +18,7 @@ public class Progress {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    private String userEmail;
 
     private Long questionId;
 
