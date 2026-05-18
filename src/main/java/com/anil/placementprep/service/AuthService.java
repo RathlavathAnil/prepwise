@@ -1,5 +1,6 @@
 package com.anil.placementprep.service;
 
+import com.anil.placementprep.dto.AuthResponse;
 import com.anil.placementprep.dto.LoginRequest;
 import com.anil.placementprep.dto.RegisterRequest;
 import com.anil.placementprep.entity.User;
@@ -8,23 +9,22 @@ import com.anil.placementprep.security.JwtService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
-
     private final JwtService jwtService;
 
-    public String register(RegisterRequest request) {
-
+    public AuthResponse register(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
-            return "Email already exists";
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already exists");
         }
 
         User user = User.builder()
@@ -36,18 +36,24 @@ public class AuthService {
 
         userRepository.save(user);
 
-        return "User registered successfully";
+        return AuthResponse.builder()
+                .message("User registered successfully")
+                .build();
     }
 
-    public String login(LoginRequest request) {
-
+    public AuthResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
 
-        return jwtService.generateToken(user.getEmail());
+        String token = jwtService.generateToken(user.getEmail());
+
+        return AuthResponse.builder()
+                .token(token)
+                .message("Login successful")
+                .build();
     }
 }
